@@ -17,6 +17,10 @@ interface PlutoMenuBarProps {
   onOpenLindiwe: () => void;
   onReplaySeal: () => void;
   onSelectTab: (tab: 'dashboard' | 'daw' | 'ubuntudj' | 'proofbridge') => void;
+  onOpenSoundPacks?: () => void;
+  onOpenPlugins?: () => void;
+  onOpenStorage?: () => void;
+  onOpenSubscription?: () => void;
 }
 
 interface MenuItem {
@@ -43,6 +47,10 @@ export const PlutoMenuBar: React.FC<PlutoMenuBarProps> = ({
   onOpenLindiwe,
   onReplaySeal,
   onSelectTab,
+  onOpenSoundPacks,
+  onOpenPlugins,
+  onOpenStorage,
+  onOpenSubscription,
 }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
@@ -66,6 +74,9 @@ export const PlutoMenuBar: React.FC<PlutoMenuBarProps> = ({
         { label: 'Import Audio Stem...', shortcut: 'Ctrl+I', action: onImportAudio },
         { label: 'Record Vocal / Mic Take...', shortcut: 'Ctrl+R', action: onRecordAudio },
         { label: 'Export Master WAV (16-bit)...', shortcut: 'Ctrl+E', action: onExportWav, divider: true },
+        { label: 'User Storage & Quotas (2GB)...', action: () => onOpenStorage?.() },
+        { label: 'Sound Packs & Sample Vault...', action: () => onOpenSoundPacks?.() },
+        { label: 'Upgrade Subscription Tier...', action: () => onOpenSubscription?.(), divider: true },
         { label: 'Lindiwe Induction Package...', action: onOpenLindiwe },
         { label: 'Executive Stakeholder Report...', action: onOpenProofBridge },
       ],
@@ -82,6 +93,7 @@ export const PlutoMenuBar: React.FC<PlutoMenuBarProps> = ({
     {
       title: 'Audio & DSP',
       items: [
+        { label: 'Studio DSP Plugin Registry (8 Plugins)...', action: () => onOpenPlugins?.() },
         { label: 'UbuntuDJ Parallel Console', shortcut: 'D', action: () => onSelectTab('ubuntudj') },
         { label: 'Oscilloscope & Mixer PiP', shortcut: 'M', action: onToggleMixer },
         { label: 'Multichannel Mic Recording', shortcut: 'Ctrl+R', action: onRecordAudio },
@@ -95,6 +107,8 @@ export const PlutoMenuBar: React.FC<PlutoMenuBarProps> = ({
         { label: 'Session Overview', action: () => onSelectTab('dashboard') },
         { label: 'Beat Lab & 16-Step Sequencer', action: () => onSelectTab('daw') },
         { label: 'UbuntuDJ Parallel Deck', shortcut: 'D', action: () => onSelectTab('ubuntudj') },
+        { label: 'Studio DSP Plugin Rack', action: () => onOpenPlugins?.() },
+        { label: 'Sound Packs & Sample Vault', action: () => onOpenSoundPacks?.() },
         { label: 'Lyrical Library & Dictation', shortcut: 'L', action: onOpenLyrics },
         { label: 'Stems Data Table (PlutoGrid)', shortcut: 'G', action: onOpenDataGrid },
         { label: 'ProofBridge Metrics & Gates', action: () => onSelectTab('proofbridge'), divider: true },
@@ -107,6 +121,7 @@ export const PlutoMenuBar: React.FC<PlutoMenuBarProps> = ({
         { label: 'Launch Lindiwe Induction Modal', action: onOpenLindiwe },
         { label: 'Audit ProofBridge Quality Gates', action: onOpenProofBridge },
         { label: 'IVE Cryptographic Block Attestation', action: onOpenProofBridge, divider: true },
+        { label: 'Stitch & Paystack Subscription...', action: () => onOpenSubscription?.() },
         { label: 'VVU Foundation Architecture', action: () => window.open('https://venturevisionubuntu.co.za', '_blank') },
       ],
     },

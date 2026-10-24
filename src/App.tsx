@@ -19,6 +19,10 @@ import { PlutoDataGrid } from './components/PlutoDataGrid';
 import { LyricNotebookModal } from './components/LyricNotebookModal';
 import { LindiweInductionModal } from './components/Lindiwe';
 import { UbuntuDJView } from './components/UbuntuDJView';
+import { SubscriptionModal } from './components/SubscriptionModal';
+import { SoundPacksModal } from './components/SoundPacksModal';
+import { PluginRegistryModal } from './components/PluginRegistryModal';
+import { StorageManagerModal } from './components/StorageManagerModal';
 import { exportWAVFile } from './services/audioEngine';
 import { RecordedAudioTake } from './services/audioRecorder';
 import { projectTracker } from './services/projectTracker';
@@ -34,6 +38,10 @@ export default function App() {
   const [isPlutoGridOpen, setIsPlutoGridOpen] = useState<boolean>(false);
   const [isLyricsOpen, setIsLyricsOpen] = useState<boolean>(false);
   const [isLindiweOpen, setIsLindiweOpen] = useState<boolean>(false);
+  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState<boolean>(false);
+  const [isSoundPacksOpen, setIsSoundPacksOpen] = useState<boolean>(false);
+  const [isPluginRegistryOpen, setIsPluginRegistryOpen] = useState<boolean>(false);
+  const [isStorageOpen, setIsStorageOpen] = useState<boolean>(false);
   const [projectTitle, setProjectTitle] = useState<string>('Horizonte');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -185,6 +193,10 @@ export default function App() {
         onOpenImport={() => setIsImportOpen(true)}
         onOpenLyrics={() => setIsLyricsOpen(true)}
         onOpenLindiwe={() => setIsLindiweOpen(true)}
+        onOpenSubscription={() => setIsSubscriptionOpen(true)}
+        onOpenSoundPacks={() => setIsSoundPacksOpen(true)}
+        onOpenPlugins={() => setIsPluginRegistryOpen(true)}
+        onOpenStorage={() => setIsStorageOpen(true)}
       />
 
       {/* 3. Pluto Menu Bar (Studio Desktop Menu) */}
@@ -201,6 +213,10 @@ export default function App() {
           onOpenLindiwe={() => setIsLindiweOpen(true)}
           onReplaySeal={handleReplaySeal}
           onSelectTab={(tab) => setCurrentTab(tab)}
+          onOpenSoundPacks={() => setIsSoundPacksOpen(true)}
+          onOpenPlugins={() => setIsPluginRegistryOpen(true)}
+          onOpenStorage={() => setIsStorageOpen(true)}
+          onOpenSubscription={() => setIsSubscriptionOpen(true)}
         />
       </div>
 
@@ -229,6 +245,8 @@ export default function App() {
           <DawStudioView
             onOpenMixer={() => setIsMixerOpen(true)}
             onSelectDashboard={() => setCurrentTab('dashboard')}
+            onOpenPlugins={() => setIsPluginRegistryOpen(true)}
+            onOpenSoundPacks={() => setIsSoundPacksOpen(true)}
           />
         )}
 
@@ -254,6 +272,8 @@ export default function App() {
         onOpenRecord={() => setIsRecordOpen(true)}
         onOpenPlutoGrid={() => setIsPlutoGridOpen(true)}
         onOpenLyrics={() => setIsLyricsOpen(true)}
+        onOpenSoundPacks={() => setIsSoundPacksOpen(true)}
+        onOpenSubscription={() => setIsSubscriptionOpen(true)}
       />
 
       {/* 6. Floating Detachable Mixer PiP Overlay with Real Oscilloscope */}
@@ -304,7 +324,35 @@ export default function App() {
         onCreateProject={handleCreateProject}
       />
 
-      {/* 12. Footer */}
+      {/* 12. Subscription & Payment Modal (Stitch & Paystack with automated tax) */}
+      <SubscriptionModal
+        isOpen={isSubscriptionOpen}
+        onClose={() => setIsSubscriptionOpen(false)}
+        onSuccess={(plan) => showToast(`Subscribed to ${plan}! Storage quota upgraded.`)}
+      />
+
+      {/* 13. Sound Packs & Stem Vault Modal */}
+      <SoundPacksModal
+        isOpen={isSoundPacksOpen}
+        onClose={() => setIsSoundPacksOpen(false)}
+        onLoadSampleToSession={handleImportAudio}
+      />
+
+      {/* 14. Studio DSP Plugin Registry & Rack Modal */}
+      <PluginRegistryModal
+        isOpen={isPluginRegistryOpen}
+        onClose={() => setIsPluginRegistryOpen(false)}
+        onOpenSubscription={() => setIsSubscriptionOpen(true)}
+      />
+
+      {/* 15. User Cloud Storage & Quota Manager Modal */}
+      <StorageManagerModal
+        isOpen={isStorageOpen}
+        onClose={() => setIsStorageOpen(false)}
+        onOpenSubscription={() => setIsSubscriptionOpen(true)}
+      />
+
+      {/* 16. Footer */}
       {currentTab !== 'daw' && currentTab !== 'ubuntudj' && (
         <footer className="border-t border-[#E8E6E0]/10 px-5 sm:px-10 py-10 max-w-[960px] mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-5 text-[11px] tracking-[0.14em] text-[#E8E6E0]/40 uppercase">
           {/* Brand with canonical Borromean mini logo */}

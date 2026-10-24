@@ -13,6 +13,8 @@ interface Tactile3DNavBarProps {
   onOpenRecord: () => void;
   onOpenPlutoGrid: () => void;
   onOpenLyrics: () => void;
+  onOpenSoundPacks?: () => void;
+  onOpenSubscription?: () => void;
 }
 
 export const Tactile3DNavBar: React.FC<Tactile3DNavBarProps> = ({
@@ -23,6 +25,8 @@ export const Tactile3DNavBar: React.FC<Tactile3DNavBarProps> = ({
   onOpenRecord,
   onOpenPlutoGrid,
   onOpenLyrics,
+  onOpenSoundPacks,
+  onOpenSubscription,
 }) => {
   return (
     <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 max-w-[96vw] w-auto">
@@ -133,7 +137,31 @@ export const Tactile3DNavBar: React.FC<Tactile3DNavBarProps> = ({
           <span className="hidden xs:inline">Gates</span>
         </button>
 
-        {/* Button 7: Mixer PiP Toggle */}
+        {/* Button 7: Sound Packs */}
+        {onOpenSoundPacks && (
+          <button
+            onClick={onOpenSoundPacks}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl text-xs font-mono-code font-bold bg-gradient-to-b from-[#22273a] to-[#151724] text-[#C47A2A] hover:text-white border border-[#E8E6E0]/10 hover:border-[#C47A2A]/40 shadow-[0_4px_6px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] active:translate-y-[2px] transition-all cursor-pointer"
+            title="Browse African Sound Packs & Samples"
+          >
+            <span>📦</span>
+            <span className="hidden lg:inline">Packs</span>
+          </button>
+        )}
+
+        {/* Button 8: Subscription Upgrade */}
+        {onOpenSubscription && (
+          <button
+            onClick={onOpenSubscription}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl text-xs font-mono-code font-bold bg-gradient-to-b from-[#3a2610] to-[#1e1308] text-[#E8D56B] hover:text-white border border-[#E8D56B]/40 hover:border-[#E8D56B] shadow-[0_4px_6px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] active:translate-y-[2px] transition-all cursor-pointer"
+            title="Subscription & Storage Quotas"
+          >
+            <span>💎</span>
+            <span className="hidden lg:inline">Pro</span>
+          </button>
+        )}
+
+        {/* Button 9: Mixer PiP Toggle */}
         <button
           onClick={onOpenMixer}
           className={`flex items-center gap-1 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl text-xs font-mono-code font-bold transition-all cursor-pointer ${

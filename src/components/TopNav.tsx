@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import { storageManager } from '../services/storageManager';
+import { billingService } from '../services/billingService';
 
 interface TopNavProps {
   currentTab: 'dashboard' | 'daw' | 'ubuntudj' | 'proofbridge';
@@ -14,6 +15,10 @@ interface TopNavProps {
   onOpenImport: () => void;
   onOpenLyrics: () => void;
   onOpenLindiwe: () => void;
+  onOpenSubscription?: () => void;
+  onOpenSoundPacks?: () => void;
+  onOpenPlugins?: () => void;
+  onOpenStorage?: () => void;
 }
 
 export const TopNav: React.FC<TopNavProps> = ({
@@ -25,6 +30,10 @@ export const TopNav: React.FC<TopNavProps> = ({
   onOpenImport,
   onOpenLyrics,
   onOpenLindiwe,
+  onOpenSubscription,
+  onOpenSoundPacks,
+  onOpenPlugins,
+  onOpenStorage,
 }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between gap-3 md:gap-6 px-5 py-3 md:px-10 bg-[#07090A]/90 backdrop-blur-xl border-b border-[#E8E6E0]/10 font-mono-code">
@@ -129,24 +138,68 @@ export const TopNav: React.FC<TopNavProps> = ({
       </nav>
 
       {/* Zone 3: Primary Action & Quick Tools */}
-      <div className="flex items-center gap-2 shrink-0">
-        <button
-          onClick={onOpenLindiwe}
-          className="hidden xl:inline-flex items-center gap-1 px-2.5 py-1.5 border border-[#C47A2A]/40 text-[10px] tracking-[0.14em] uppercase text-[#C47A2A] hover:bg-[#C47A2A]/10 transition-colors cursor-pointer"
-        >
-          Lindiwe
-        </button>
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Storage Quota Meter */}
+        {onOpenStorage && (
+          <button
+            onClick={onOpenStorage}
+            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-[#121622] hover:bg-[#1a2033] border border-[#E8E6E0]/20 rounded text-[10px] text-[#E8E6E0] cursor-pointer transition-colors"
+            title="View user storage quota & disk limit"
+          >
+            <span>💾</span>
+            <span className="font-mono text-[#00f2fe] font-bold">
+              {storageManager.getUsedPercentage()}%
+            </span>
+            <span className="text-[#E8E6E0]/40 hidden lg:inline">
+              ({storageManager.formatBytes(storageManager.getQuota().totalLimitBytes)})
+            </span>
+          </button>
+        )}
+
+        {/* Sound Packs */}
+        {onOpenSoundPacks && (
+          <button
+            onClick={onOpenSoundPacks}
+            className="hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 border border-[#C47A2A]/40 text-[10px] tracking-wider uppercase text-[#C47A2A] hover:bg-[#C47A2A]/10 transition-colors cursor-pointer rounded"
+          >
+            <span>📦</span>
+            <span>Packs</span>
+          </button>
+        )}
+
+        {/* Plugins Rack */}
+        {onOpenPlugins && (
+          <button
+            onClick={onOpenPlugins}
+            className="hidden lg:inline-flex items-center gap-1 px-2.5 py-1.5 border border-[#E8D56B]/40 text-[10px] tracking-wider uppercase text-[#E8D56B] hover:bg-[#E8D56B]/10 transition-colors cursor-pointer rounded"
+          >
+            <span>🔌</span>
+            <span>Plugins</span>
+          </button>
+        )}
+
+        {/* Subscription / Plan Upgrade */}
+        {onOpenSubscription && (
+          <button
+            onClick={onOpenSubscription}
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-gradient-to-r from-[#C47A2A] to-[#E8D56B] text-[#07090A] hover:brightness-110 text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer rounded shadow-sm"
+            title="Upgrade subscription tier (Stitch & Paystack)"
+          >
+            <span>💎</span>
+            <span className="hidden sm:inline">{billingService.getActivePlan().name === 'Free Tier' ? 'Upgrade' : 'Pro Plan'}</span>
+          </button>
+        )}
 
         <button
           onClick={onOpenImport}
-          className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 border border-[#E8E6E0]/20 text-[10px] tracking-[0.14em] uppercase text-[#E8E6E0]/70 hover:text-[#E8E6E0] hover:border-[#E8E6E0]/40 transition-colors cursor-pointer"
+          className="hidden xl:inline-flex items-center gap-1 px-3 py-1.5 border border-[#E8E6E0]/20 text-[10px] tracking-[0.14em] uppercase text-[#E8E6E0]/70 hover:text-[#E8E6E0] hover:border-[#E8E6E0]/40 transition-colors cursor-pointer"
         >
           Import Audio
         </button>
 
         <button
           onClick={onOpenNewProject}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#F5F0E0] text-[#07090A] hover:bg-[#E8E6E0] transition-transform duration-150 active:scale-98 text-[11px] font-semibold tracking-[0.14em] uppercase cursor-pointer"
+          className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 bg-[#F5F0E0] text-[#07090A] hover:bg-[#E8E6E0] transition-transform duration-150 active:scale-98 text-[11px] font-semibold tracking-[0.14em] uppercase cursor-pointer"
         >
           <span className="text-sm leading-none font-bold">+</span>
           <span className="hidden xs:inline">New Project</span>

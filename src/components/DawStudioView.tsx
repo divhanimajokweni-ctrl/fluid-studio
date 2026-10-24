@@ -17,10 +17,20 @@ import {
   exportWAVFile,
   NOTES_FREQUENCIES,
 } from '../services/audioEngine';
+import { TempoAutomationLane } from './TempoAutomationLane';
+import {
+  TempoKeyframe,
+  TEMPO_PRESETS,
+  calculateBpmAtStep,
+} from '../services/tempoAutomation';
+import { MIXING_PRESETS, MixingPreset } from '../services/mixingPresets';
+import { projectTracker } from '../services/projectTracker';
 
 interface DawStudioViewProps {
   onOpenMixer: () => void;
   onSelectDashboard: () => void;
+  onOpenPlugins?: () => void;
+  onOpenSoundPacks?: () => void;
 }
 
 const DEFAULT_CHANNELS: TrackChannel[] = [
@@ -81,7 +91,12 @@ const DRUM_PADS_CONFIG: DrumPad[] = [
   { id: 15, name: 'SYNTH B3', sub: 'Pad 16 (V)', type: 'synth', noteIndex: 0, hotkey: 'V', color: '#8b5cf6' },
 ];
 
-export const DawStudioView: React.FC<DawStudioViewProps> = ({ onOpenMixer, onSelectDashboard }) => {
+export const DawStudioView: React.FC<DawStudioViewProps> = ({
+  onOpenMixer,
+  onSelectDashboard,
+  onOpenPlugins,
+  onOpenSoundPacks,
+}) => {
   const [channels, setChannels] = useState<TrackChannel[]>(DEFAULT_CHANNELS);
   const [draggedChannelIndex, setDraggedChannelIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -92,6 +107,33 @@ export const DawStudioView: React.FC<DawStudioViewProps> = ({ onOpenMixer, onSel
   const [hitPads, setHitPads] = useState<Record<number, boolean>>({});
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
+
+  // Tempo Automation State
+  const [showTempoAutomation, setShowTempoAutomation] = useState<boolean>(false);
+  const [isAutomationActive, setIsAutomationActive] = useState<boolean>(true);
+  const [tempoKeyframes, setTempoKeyframes] = useState<TempoKeyframe[]>(() => TEMPO_PRESETS[1].keyframes);
+
+  // Mixing Preset State
+  const [activeMixingPreset, setActiveMixingPreset] = useState<string | null>('preset-amapiano-log-punch');
+  const [mixingNotice, setMixingNotice] = useState<string | null>(null);
+
+  const tempoKeyframesRef = useRef<TempoKeyframe[]>(tempoKeyframes);
+  const isAutomationActiveRef = useRef<boolean>(isAutomationActive);
+  const bpmRef = useRef<number>(bpm);
+  const isPlayingRef = useRef<boolean>(false);
+  const stepTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    tempoKeyframesRef.current = tempoKeyframes;
+  }, [tempoKeyframes]);
+
+  useEffect(() => {
+    isAutomationActiveRef.current = isAutomationActive;
+  }, [isAutomationActive]);
+
+  useEffect(() => {
+    bpmRef.current = bpm;
+  }, [bpm]);
 
   // Drag and drop reordering handlers (Reorderable Grid UI Pattern)
   const handleDragStart = (index: number) => {
@@ -240,50 +282,67 @@ export const DawStudioView: React.FC<DawStudioViewProps> = ({ onOpenMixer, onSel
     currentStepRef.current = (step + 1) % 16;
   }, []);
 
+  // Dynamic tempo step scheduler for authentic African groove and tempo automation
+  const runNextStep = useCallback(() => {
+    if (!isPlayingRef.current) return;
+    stepClock();
+
+    const nextStep = currentStepRef.current;
+    const effectiveBpm = isAutomationActiveRef.current
+      ? calculateBpmAtStep(nextStep, tempoKeyframesRef.current, bpmRef.current)
+      : bpmRef.current;
+    const stepMs = Math.max(20, (60 / effectiveBpm / 4) * 1000);
+
+    stepTimeoutRef.current = window.setTimeout(runNextStep, stepMs);
+  }, [stepClock]);
+
   // Play / Pause toggle
   const togglePlay = () => {
     const ctx = getAudioContext();
     if (ctx.state === 'suspended') ctx.resume();
 
     if (isPlaying) {
+      isPlayingRef.current = false;
       setIsPlaying(false);
-      if (stepIntervalRef.current) {
-        clearInterval(stepIntervalRef.current);
-        stepIntervalRef.current = null;
+      if (stepTimeoutRef.current) {
+        clearTimeout(stepTimeoutRef.current);
+        stepTimeoutRef.current = null;
       }
     } else {
+      isPlayingRef.current = true;
       setIsPlaying(true);
-      const stepMs = (60 / bpm / 4) * 1000;
-      stepIntervalRef.current = window.setInterval(stepClock, stepMs);
+      runNextStep();
     }
   };
 
   // Stop sequence and reset playhead
   const stopSequence = () => {
+    isPlayingRef.current = false;
     setIsPlaying(false);
-    if (stepIntervalRef.current) {
-      clearInterval(stepIntervalRef.current);
-      stepIntervalRef.current = null;
+    if (stepTimeoutRef.current) {
+      clearTimeout(stepTimeoutRef.current);
+      stepTimeoutRef.current = null;
     }
     currentStepRef.current = 0;
     setCurrentStep(0);
   };
 
-  // Keep interval in sync with BPM changes
-  useEffect(() => {
-    if (isPlaying) {
-      if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
-      const stepMs = (60 / bpm / 4) * 1000;
-      stepIntervalRef.current = window.setInterval(stepClock, stepMs);
-    }
-  }, [bpm, isPlaying, stepClock]);
-
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (stepIntervalRef.current) clearInterval(stepIntervalRef.current);
+      isPlayingRef.current = false;
+      if (stepTimeoutRef.current) clearTimeout(stepTimeoutRef.current);
     };
   }, []);
+
+  const handleApplyMixingPreset = (presetId: string) => {
+    const found = MIXING_PRESETS.find((p) => p.id === presetId);
+    if (!found) return;
+    setActiveMixingPreset(presetId);
+    setMixingNotice(`Applied "${found.name}" (${found.category})`);
+    setTimeout(() => setMixingNotice(null), 3000);
+    projectTracker.touchProject('proj-horizonte', `Applied mixing preset: ${found.name}`);
+  };
 
   // Keyboard shortcut listener for drum pads
   useEffect(() => {
@@ -388,7 +447,62 @@ export const DawStudioView: React.FC<DawStudioViewProps> = ({ onOpenMixer, onSel
           <span className="text-xs font-bold tracking-wider text-[#C47A2A]">HORIZONTE · BEAT LAB WORKSPACE</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {mixingNotice && (
+            <span className="text-[10px] tracking-wider text-[#10b981] bg-[#10b981]/15 px-2 py-0.5 border border-[#10b981]/40 rounded animate-fade-in hidden md:inline">
+              ✓ {mixingNotice}
+            </span>
+          )}
+
+          {/* Mixing Presets Dropdown */}
+          <div className="flex items-center gap-1 bg-[#12141d] px-2 py-1 rounded border border-[#E8E6E0]/15 text-[10px]">
+            <span className="text-[#E8D56B] font-bold hidden sm:inline">PRESET:</span>
+            <select
+              aria-label="Mixing preset selector"
+              value={activeMixingPreset || ''}
+              onChange={(e) => handleApplyMixingPreset(e.target.value)}
+              className="bg-transparent text-[#E8E6E0] font-mono text-[10px] focus:outline-none cursor-pointer"
+            >
+              {MIXING_PRESETS.map((preset) => (
+                <option key={preset.id} value={preset.id} className="bg-[#0B0F12] text-white">
+                  [{preset.category}] {preset.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tempo Automation Lane Toggle */}
+          <button
+            onClick={() => setShowTempoAutomation((prev) => !prev)}
+            className={`px-2.5 py-1 text-[10px] font-bold rounded tracking-wider cursor-pointer transition-all border ${
+              showTempoAutomation
+                ? 'bg-[#00f2fe]/20 text-[#00f2fe] border-[#00f2fe] shadow-[0_0_8px_rgba(0,242,254,0.3)]'
+                : 'bg-[#12141d] text-[#E8E6E0]/70 border-[#E8E6E0]/15 hover:border-[#00f2fe]/40'
+            }`}
+          >
+            ⏱ TEMPO LANE
+          </button>
+
+          {/* Plugins Rack */}
+          {onOpenPlugins && (
+            <button
+              onClick={onOpenPlugins}
+              className="px-2.5 py-1 bg-[#12141d] hover:bg-[#1c2233] text-[#E8D56B] border border-[#E8D56B]/40 rounded text-[10px] font-bold tracking-wider cursor-pointer"
+            >
+              🔌 PLUGINS
+            </button>
+          )}
+
+          {/* Sound Packs */}
+          {onOpenSoundPacks && (
+            <button
+              onClick={onOpenSoundPacks}
+              className="px-2.5 py-1 bg-[#12141d] hover:bg-[#1c2233] text-[#C47A2A] border border-[#C47A2A]/40 rounded text-[10px] font-bold tracking-wider cursor-pointer"
+            >
+              📦 PACKS
+            </button>
+          )}
+
           {exportNotice && (
             <span className="text-[10px] tracking-wider text-[#E8D56B] bg-[#E8D56B]/10 px-2 py-0.5 border border-[#E8D56B]/30 animate-pulse hidden sm:inline">
               {exportNotice}
@@ -438,6 +552,21 @@ export const DawStudioView: React.FC<DawStudioViewProps> = ({ onOpenMixer, onSel
           })}
         </div>
       </div>
+
+      {/* Dynamic Tempo Automation Lane */}
+      {showTempoAutomation && (
+        <div className="px-4 sm:px-8 bg-[#0B0F12] border-b border-[#E8E6E0]/10">
+          <TempoAutomationLane
+            currentStep={currentStep}
+            isPlaying={isPlaying}
+            baseBpm={bpm}
+            keyframes={tempoKeyframes}
+            onKeyframesChange={(kfs) => setTempoKeyframes(kfs)}
+            isAutomationEnabled={isAutomationActive}
+            onToggleAutomation={() => setIsAutomationActive((p) => !p)}
+          />
+        </div>
+      )}
 
       {/* Editor & Sequencer View Body */}
       <div className="flex-1 flex flex-col lg:grid lg:grid-cols-[280px_1fr] overflow-hidden bg-[#07090A]">
