@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg: #07090A;
+    --bg-2: #0B0F12;
+    --bg-3: #0F1418;
+    --ink: #E8E6E0;
+    --ink-dim: rgba(232, 230, 224, 0.5);
+    --ink-faint: rgba(232, 230, 224, 0.3);
+    --ochre: #C47A2A;
+    --moss: #6A8A4F;
+    --yellow: #E8D56B;
+    --cream: #F5F0E0;
+    --border: rgba(232, 230, 224, 0.08);
+    --border-strong: rgba(232, 230, 224, 0.14);
+
+    /* VVU Design System & Lindiwe Induction Tokens */
+    --fill-accent: oklch(0.82 0.16 80.5);
+    --on-accent: oklch(0.145 0 0);
+    --fill-primary: oklch(0.82 0.16 80.5);
+    --on-primary: oklch(0.145 0 0);
+    --fill-primary-hover: oklch(0.74 0.18 75);
+    --fill-success: oklch(0.62 0.19 142.5);
+    --on-success: oklch(0.985 0 0);
+    --fill-field: oklch(0.18 0 0);
+    --surface-1: oklch(0.145 0 0);
+    --surface-2: oklch(0.18 0 0);
+    --surface-3: oklch(0.22 0 0);
+    --text-primary: oklch(0.985 0 0);
+    --text-secondary: oklch(0.65 0 0);
+    --text-muted: oklch(0.45 0 0);
+    --text-danger: oklch(0.6 0.2 25);
+    --text-success: oklch(0.62 0.19 142.5);
+    --text-accent: oklch(0.82 0.16 80.5);
+    --border-accent: oklch(0.82 0.16 80.5);
+    --border-danger: oklch(0.6 0.2 25);
+    --border-success: oklch(0.62 0.19 142.5);
+    --bg-accent: oklch(0.82 0.16 80.5 / 0.15);
+    --bg-danger: oklch(0.6 0.2 25 / 0.15);
+    --bg-success: oklch(0.62 0.19 142.5 / 0.15);
+    --radius: 6px;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0F12;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(232, 230, 224, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(232, 230, 224, 0.3);
+}
+
+/* Production-Ready CSS Effect Library (VVU Design System) */
+.glass-panel {
+  background: rgba(18, 20, 29, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(232, 230, 224, 0.12);
+}
+
+.glow-accent {
+  box-shadow: 0 0 25px rgba(196, 122, 42, 0.25);
+}
+
+.glow-moss {
+  box-shadow: 0 0 20px rgba(106, 138, 79, 0.3);
+}
+
+.glow-yellow {
+  box-shadow: 0 0 20px rgba(232, 213, 107, 0.25);
+}
+
+.tactile-bevel {
+  box-shadow: 0 16px 32px -4px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
+}
+
+.tactile-inset {
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.9), inset 0 0 8px rgba(0,0,0,0.7);
+}

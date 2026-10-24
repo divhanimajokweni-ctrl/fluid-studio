@@ -1,0 +1,6 @@
+{
+  "name": "Fluid Studio — Audio DAW & Production Suite",
+  "description": "Professional web audio workstation, interactive DAW sequencer, and production flow dashboard featuring Borromean seal animation and ProofBridge verified milestone metrics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

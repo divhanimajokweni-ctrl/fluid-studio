@@ -1,0 +1,67 @@
+.completeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 0;
+  gap: 1.5rem;
+}
+
+.sealRingContainer {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto;
+}
+
+.successTitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-success, #10b981);
+}
+
+.successMessage {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #94a3b8);
+  max-width: 460px;
+  line-height: 1.6;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.certificateBox {
+  background: var(--surface-2, #12171c);
+  border: 1px solid var(--border-accent, #c47a2a);
+  padding: 1.25rem;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius, 4px);
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.certRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border, rgba(232, 230, 224, 0.08));
+  padding-bottom: 0.4rem;
+}
+
+.certLabel {
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+}
+
+.certValue {
+  color: var(--text-primary, #f8fafc);
+  font-weight: 600;
+}
+
+.hashValue {
+  color: var(--text-accent, #e8d56b);
+  font-family: 'JetBrains Mono', monospace;
+  word-break: break-all;
+}

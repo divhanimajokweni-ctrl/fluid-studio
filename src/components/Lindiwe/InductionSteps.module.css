@@ -1,0 +1,105 @@
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.stepTitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary, #e8e6e0);
+  margin-bottom: 0.25rem;
+}
+
+.stepDescription {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.5;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+}
+
+.input {
+  background: var(--fill-field, #14181f);
+  border: 1px solid var(--border, rgba(232, 230, 224, 0.15));
+  color: var(--text-primary, #f8fafc);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+  border-radius: var(--radius, 4px);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--fill-accent, #c47a2a);
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #94a3b8);
+  font-family: system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+}
+
+.checkbox {
+  margin-top: 0.15rem;
+  accent-color: var(--fill-accent, #c47a2a);
+}
+
+.actionsBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, rgba(232, 230, 224, 0.1));
+}
+
+.backBtn {
+  background: transparent;
+  border: 1px solid var(--border, rgba(232, 230, 224, 0.2));
+  color: var(--text-secondary, #a0aec0);
+  padding: 0.6rem 1.2rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--radius, 4px);
+}
+
+.primaryBtn {
+  background: var(--fill-primary, #c47a2a);
+  color: var(--on-primary, #0a0b10);
+  border: none;
+  font-weight: 700;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--radius, 4px);
+  box-shadow: 0 4px 12px var(--bg-accent, rgba(196, 122, 42, 0.25));
+  transition: all 0.15s ease;
+}
+
+.primaryBtn:hover {
+  background: var(--fill-primary-hover, #e8d56b);
+}
